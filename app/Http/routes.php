@@ -28,49 +28,22 @@ Route::get('/', function () {
 |
 */
 
-use App\Task;
+use App\Task; // A MUST
 use Illuminate\Http\Request;
 
 Route::group(['middleware' => ['web']], function () {
     /**
      * Show Task Dashboard
      */
-    Route::get('/', function () {
-        // return view('tasks');
-
-        $tasks = Task::orderBy('created_at', 'asc')->get();
-
-        return view('tasks', compact('tasks'));
-    });
+    Route::get('/', 'TaskController@index');
 
     /**
      * Add New Task
      */
-    Route::post('/task', function (Request $request) {
-        $validator = Validator::make($request->all(), [
-            'name' => 'required|max:255',
-        ]);
-
-        if ($validator->fails()) { //redirect back with orig. input and error msg
-            return redirect('/')
-                ->withInput()
-                ->withErrors($validator);
-        }
-
-        // Create The Task...
-        $task = new Task;
-        $task->name = $request->name;
-        $task->save();
-
-        return redirect('/');
-    });
+    Route::post('/task', 'TaskController@store');
 
     /**
      * Delete Task
      */
-    Route::delete('/task/{task}', function (Task $task) {
-        $task->delete();
-
-        return redirect('/');
-    });
+    Route::delete('/task/{task}', 'TaskController@destroy');
 });
